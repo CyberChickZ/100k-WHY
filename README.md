@@ -322,6 +322,13 @@ sudo snap remove chromium
 - 填入: `/usr/local/bin/code --goto \1:\2`
 - 其中 `\1` 是 iTerm2 自动替换的文件路径，`\2` 是行号（如路径含 `:42` 格式），`--goto` 让 VS Code 打开并跳转到指定行
 
+💡 **额外推荐**: 在 VS Code `settings.json` 中加入以下配置，让 `.md` 文件默认以预览模式打开：
+```json
+"workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+}
+```
+
 📚 **出处**: [Claude]
 
 ---
