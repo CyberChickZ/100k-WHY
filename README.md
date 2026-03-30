@@ -304,10 +304,24 @@ sudo snap remove chromium
 
 ---
 
-📚 **出处**:  
+📚 **出处**:
 
 * [syslog 爆炸导致 Ubuntu 系统崩溃](https://askubuntu.com/questions/1103137/huge-syslog-file-crashing-system)
 * [zygote error 导致 Linux syslog 被写满](https://www.reddit.com/r/discordapp/comments/1o55chc/zygote_linuxcc_error_filling_syslog/)
 * [Jetson 官方确认：Chromium 在 Orin 上突然坏掉并写爆系统](https://jetsonhacks.com/2025/07/12/why-chromium-suddenly-broke-on-jetson-orin-and-how-to-bring-it-back/#:~:text=Here%20is%20the%20NVIDIA%20Jetson,set%20capabilities:%20Operation%20not%20permitted)
+
+---
+
+🔑 **关键词**: iTerm2 Cmd+点击文件路径用 VS Code 打开而非 Xcode
+
+⚠️ **问题出现**: 在 iTerm2 中 Cmd+点击 Claude Code 输出的文件路径（如 `docs/research_summary.md`），默认用 Xcode 打开而非 VS Code，因为 macOS 将 `.md` 等文件类型关联到了 Xcode。
+
+✅ **解决方案**: 在 iTerm2 中配置 Semantic History：
+- **Preferences (Cmd+,) → Profiles → Advanced** → 滚到底部找到 **Semantic History**
+- 下拉选择 **"Run command..."**
+- 填入: `/usr/local/bin/code --goto \1:\2`
+- 其中 `\1` 是 iTerm2 自动替换的文件路径，`\2` 是行号（如路径含 `:42` 格式），`--goto` 让 VS Code 打开并跳转到指定行
+
+📚 **出处**: [Claude]
 
 ---
