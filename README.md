@@ -348,3 +348,14 @@ source ~/.iterm2_shell_integration.zsh
 📚 **出处**: [Claude]
 
 ---
+
+🔑 **关键词**: Vast.ai SSH Key 团队共享限制
+⚠️ **问题出现**: 在 Vast.ai 租用 GPU 服务器后，SSH Key 只能通过个人账户在网页端上传。团队成员无法共享已上传的 SSH Key，每个人需要各自手动设置。
+✅ **解决方案**: 每位团队成员需登录自己的 Vast.ai 账户，在网页端 **Account → SSH Keys** 单独上传自己的公钥。或者在实例启动后，手动将团队成员的公钥追加到 `~/.ssh/authorized_keys`：
+```bash
+# 在已启动的实例上执行
+echo "ssh-ed25519 AAAA... teammate@email" >> ~/.ssh/authorized_keys
+```
+📚 **出处**: [实践经验]
+
+---
