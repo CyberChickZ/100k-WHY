@@ -331,4 +331,20 @@ sudo snap remove chromium
 
 📚 **出处**: [Claude]
 
+💡 **额外排查**: 如果配置正确但 Cmd+Click 仍不生效（尤其是相对路径如 `docs/xxx.md`），检查 iTerm2 Shell Integration 是否安装。没有 shell integration，iTerm2 无法获取终端的当前工作目录（CWD），无法将相对路径解析为绝对路径。
+
+诊断：
+- 检查文件是否存在: `ls ~/.iterm2_shell_integration.zsh`
+- 检查 `.zshrc` 是否 source 了它: `grep iterm2_shell_integration ~/.zshrc`
+
+修复：
+```bash
+curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh
+echo 'source ~/.iterm2_shell_integration.zsh' >> ~/.zshrc
+source ~/.iterm2_shell_integration.zsh
+```
+或通过菜单: **iTerm2 → Install Shell Integration**
+
+📚 **出处**: [Claude]
+
 ---
