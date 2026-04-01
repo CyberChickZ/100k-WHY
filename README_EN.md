@@ -401,3 +401,24 @@ COPYFILE_DISABLE=1 tar --use-compress-program='zstd -T0' -cf /Volumes/Disk/H36M.
 📚 **Source**: [GNU tar manual](https://www.gnu.org/software/tar/manual/) / [Zstandard](https://facebook.github.io/zstd/) / [Claude]
 
 ---
+
+🔑 **Keywords**: rsync pause/resume/continue transfer, SIGSTOP/SIGCONT
+⚠️ **Problem**: Need to pause rsync during a large file transfer to HDD (e.g., to check USB port speed)
+✅ **Solution**:
+- Pause: `pkill -STOP rsync` (SIGSTOP — process freezes but doesn't exit)
+- Resume: `kill -CONT $(pgrep rsync)`
+- Kill completely: `kill $(pgrep rsync)`, then re-run the same rsync command — it will **skip already-transferred files** and resume automatically
+📚 **Source**: [rsync man page](https://download.samba.org/pub/rsync/rsync.1) / [Claude]
+
+---
+
+🔑 **Keywords**: Slow USB transfer speed, HDD actual write vs interface speed, system_profiler detect USB version
+⚠️ **Problem**: WD Elements 6TB rated at 10 Gbps (USB 3.2 Gen 2), but rsync only achieves ~29 MB/s — suspected USB 2.0 fallback
+✅ **Solution**:
+- Interface speed ≠ drive speed: mechanical HDDs write at 100-150 MB/s, but 29 MB/s suggests USB 2.0 (480 Mbps ≈ 35 MB/s ceiling)
+- Detection command: `system_profiler SPUSBDataType 2>/dev/null | grep -A5 "Elements"`, check the Speed line
+- `Up to 5 Gb/s` = USB 3.0 ✅ | `Up to 480 Mb/s` = USB 2.0 ❌
+- Fix: plug directly into Mac USB-C/Thunderbolt port, avoid cheap hubs/adapters that cause speed downgrade
+📚 **Source**: [Apple Support - USB](https://support.apple.com/en-us/102567) / [Claude]
+
+---

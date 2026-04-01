@@ -415,3 +415,24 @@ COPYFILE_DISABLE=1 tar --use-compress-program='zstd -T0' -cf /Volumes/Disk/H36M.
 📚 **出处**: [GNU tar manual](https://www.gnu.org/software/tar/manual/) / [Zstandard](https://facebook.github.io/zstd/) / [Claude]
 
 ---
+
+🔑 **关键词**: rsync 暂停/恢复/续传, SIGSTOP/SIGCONT
+⚠️ **问题出现**: rsync 大量文件传输到 HDD 过程中需要暂停（如检查 USB 口速度）
+✅ **解决方案**:
+- 暂停：`pkill -STOP rsync`（SIGSTOP，进程冻结但不退出）
+- 恢复：`kill -CONT $(pgrep rsync)`
+- 彻底停掉：`kill $(pgrep rsync)`，重跑同一条 rsync 命令会**跳过已传完的文件**自动续传
+📚 **出处**: [rsync man page](https://download.samba.org/pub/rsync/rsync.1) / [Claude]
+
+---
+
+🔑 **关键词**: USB 传输速度慢, HDD 实际写入 vs 接口速度, system_profiler 检测 USB 版本
+⚠️ **问题出现**: WD Elements 6TB 标称 10 Gbps (USB 3.2 Gen 2)，实测 rsync 只有 ~29 MB/s，疑似降到 USB 2.0
+✅ **解决方案**:
+- 接口速度 ≠ 盘速度：机械盘实际写入 100-150 MB/s，但 29 MB/s 说明可能是 USB 2.0 (480 Mbps ≈ 35 MB/s 上限)
+- 检测命令：`system_profiler SPUSBDataType 2>/dev/null | grep -A5 "Elements"`，看 Speed 行
+- `Up to 5 Gb/s` = USB 3.0 ✅ | `Up to 480 Mb/s` = USB 2.0 ❌
+- 解决：直插 Mac USB-C/Thunderbolt 口，避免劣质 hub/转接头降速
+📚 **出处**: [Apple Support - USB](https://support.apple.com/en-us/102567) / [Claude]
+
+---
