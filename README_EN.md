@@ -422,3 +422,14 @@ COPYFILE_DISABLE=1 tar --use-compress-program='zstd -T0' -cf /Volumes/Disk/H36M.
 📚 **Source**: [Apple Support - USB](https://support.apple.com/en-us/102567) / [Claude]
 
 ---
+
+🔑 **Keywords**: HDD slow with many small files, random write vs sequential write, tar packing optimization
+⚠️ **Problem**: rsync transferring 14825 small files to HDD — speed fluctuates 40-86 MB/s, far below HDD sequential write theoretical max (~150 MB/s)
+✅ **Solution**:
+- Cause: each small file triggers HDD head seek (~10ms/seek), random writes are much slower than sequential writes
+- Optimization (requires enough SSD space): `tar cf` on SSD first into one large file, then `cp` to HDD (single file sequential write, saturates bandwidth)
+- If SSD space is insufficient: rsync is the best option — let it run, it supports resuming after interruption
+- rsync resume: re-run the same command after interruption, it skips already-transferred files
+📚 **Source**: [Claude]
+
+---

@@ -436,3 +436,14 @@ COPYFILE_DISABLE=1 tar --use-compress-program='zstd -T0' -cf /Volumes/Disk/H36M.
 📚 **出处**: [Apple Support - USB](https://support.apple.com/en-us/102567) / [Claude]
 
 ---
+
+🔑 **关键词**: HDD 小文件传输慢, 随机写 vs 顺序写, tar 打包优化
+⚠️ **问题出现**: rsync 传输 14825 个小文件到 HDD，速度波动 40-86 MB/s，远低于 HDD 顺序写入理论值（~150 MB/s）
+✅ **解决方案**:
+- 原因：每个小文件都触发 HDD 机械臂寻道（~10ms/次），随机写远慢于顺序写
+- 优化方案（需要足够 SSD 空间）：先在 SSD 上 `tar cf` 打成一个大文件，再 `cp` 到 HDD（单文件顺序写，可跑满带宽）
+- SSD 空间不够时：rsync 就是最优解，挂着跑完即可，支持中断续传
+- rsync 续传：中断后重跑同一条命令，会跳过已传完的文件
+📚 **出处**: [Claude]
+
+---
