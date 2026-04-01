@@ -345,3 +345,59 @@ echo "ssh-ed25519 AAAA... teammate@email" >> ~/.ssh/authorized_keys
 📚 **Source**: [Practical experience]
 
 ---
+
+🔑 **Keywords**: macOS diskutil format external drive to exFAT (Linux/Mac universal)
+⚠️ **Problem**: Need to format a 6TB NTFS external hard drive to a format that both Linux and macOS can natively read and write
+✅ **Solution**:
+<details><summary>diskutil formatting workflow</summary>
+
+1. Identify disk number: `diskutil list`
+2. Unmount disk: `diskutil unmountDisk /dev/diskN`
+3. Format as exFAT: `diskutil eraseDisk ExFAT VolumeName GPT /dev/diskN`
+4. Verify: `diskutil info /dev/diskNs2`
+
+exFAT is chosen because both Mac and Linux natively read/write it without extra drivers. GPT partition table is the modern standard.
+
+</details>
+
+📚 **Source**: [Apple diskutil man page](https://ss64.com/mac/diskutil.html) / [Claude]
+
+---
+
+🔑 **Keywords**: diskutil rename external drive, exFAT volume name restrictions
+⚠️ **Problem**: `diskutil rename` fails with `does not appear to be a valid volume name` because the name contains underscores `_` or other special characters
+✅ **Solution**: Avoid special characters (underscores, spaces, etc.) in exFAT volume names — use alphanumeric characters only. Command: `diskutil rename /Volumes/OldName "NewName"`
+📚 **Source**: [Claude]
+
+---
+
+🔑 **Keywords**: tar archive large folders to external drive, macOS COPYFILE_DISABLE, zstd parallel compression
+⚠️ **Problem**: Dragging many small files (e.g., H36M dataset) to an external drive via Finder is extremely slow (estimated 3 hours) — need a faster method
+✅ **Solution**:
+<details><summary>Three tar approaches</summary>
+
+**No compression (fastest, for local transfers):**
+```bash
+COPYFILE_DISABLE=1 tar cf /Volumes/Disk/H36M.tar -C /path/to Downloads H36M
+```
+
+**gzip compression (universal):**
+```bash
+COPYFILE_DISABLE=1 tar czf /Volumes/Disk/H36M.tar.gz -C /path/to Downloads H36M
+```
+
+**zstd compression (recommended, 3-5x faster):**
+```bash
+brew install zstd
+COPYFILE_DISABLE=1 tar --use-compress-program='zstd -T0' -cf /Volumes/Disk/H36M.tar.zst -C /path/to Downloads H36M
+```
+
+- `COPYFILE_DISABLE=1` prevents macOS from adding `._` junk files (causes issues when extracting on Linux)
+- `-T0` uses all CPU cores for parallel compression
+- Add `-v` to see per-file progress
+
+</details>
+
+📚 **Source**: [GNU tar manual](https://www.gnu.org/software/tar/manual/) / [Zstandard](https://facebook.github.io/zstd/) / [Claude]
+
+---

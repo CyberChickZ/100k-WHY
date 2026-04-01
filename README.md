@@ -359,3 +359,59 @@ echo "ssh-ed25519 AAAA... teammate@email" >> ~/.ssh/authorized_keys
 📚 **出处**: [实践经验]
 
 ---
+
+🔑 **关键词**: macOS diskutil 格式化外接硬盘为 exFAT (Linux/Mac 通用)
+⚠️ **问题出现**: 需要将 NTFS 格式的 6TB 外接硬盘格式化为 Linux 和 macOS 都能原生读写的格式
+✅ **解决方案**:
+<details><summary>diskutil 格式化流程</summary>
+
+1. 确认磁盘编号：`diskutil list`
+2. 卸载磁盘：`diskutil unmountDisk /dev/diskN`
+3. 格式化为 exFAT：`diskutil eraseDisk ExFAT 卷名 GPT /dev/diskN`
+4. 验证：`diskutil info /dev/diskNs2`
+
+选 exFAT 是因为 Mac 和 Linux 都原生读写，无需额外驱动。GPT 分区表是现代标准。
+
+</details>
+
+📚 **出处**: [Apple diskutil man page](https://ss64.com/mac/diskutil.html) / [Claude]
+
+---
+
+🔑 **关键词**: diskutil rename 外接硬盘改名, exFAT 卷名限制
+⚠️ **问题出现**: `diskutil rename` 改名时报 `does not appear to be a valid volume name`，原因是名字含下划线 `_` 等特殊字符
+✅ **解决方案**: exFAT 卷名避免特殊字符（下划线、空格等），使用纯字母数字组合。命令：`diskutil rename /Volumes/旧名 "新名"`
+📚 **出处**: [Claude]
+
+---
+
+🔑 **关键词**: tar 打包大文件夹到外接硬盘, macOS COPYFILE_DISABLE, zstd 并行压缩
+⚠️ **问题出现**: Finder 拖拽大量小文件（如 H36M 数据集）到外接硬盘极慢（预估 3 小时），需要更快的方式
+✅ **解决方案**:
+<details><summary>三种 tar 方案</summary>
+
+**不压缩（最快，本地传输用）：**
+```bash
+COPYFILE_DISABLE=1 tar cf /Volumes/Disk/H36M.tar -C /path/to Downloads H36M
+```
+
+**gzip 压缩（通用）：**
+```bash
+COPYFILE_DISABLE=1 tar czf /Volumes/Disk/H36M.tar.gz -C /path/to Downloads H36M
+```
+
+**zstd 压缩（推荐，速度快 3-5x）：**
+```bash
+brew install zstd
+COPYFILE_DISABLE=1 tar --use-compress-program='zstd -T0' -cf /Volumes/Disk/H36M.tar.zst -C /path/to Downloads H36M
+```
+
+- `COPYFILE_DISABLE=1` 防止 macOS 塞 `._` 垃圾文件（Linux 解压会出问题）
+- `-T0` 用所有 CPU 核心并行压缩
+- 加 `-v` 看逐文件进度
+
+</details>
+
+📚 **出处**: [GNU tar manual](https://www.gnu.org/software/tar/manual/) / [Zstandard](https://facebook.github.io/zstd/) / [Claude]
+
+---
